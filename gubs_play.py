@@ -273,7 +273,8 @@ def describe_action(action: Dict, game: Optional['GubsGame'] = None) -> str:
     if t == "play_interrupt":
         cn = action.get("card_name", "?")
         if action.get("is_gargok_save"):
-            return f"{cn}: discard now to protect your hand from Gargok Plague"
+            cricket = " (via Cricket Song)" if action.get("is_cricket_song") else ""
+            return f"{cn}{cricket}: discard now to protect your hand from Gargok Plague"
         cricket = " (via Cricket Song)" if action.get("is_cricket_song") else ""
         return f"{cn}{cricket}: cancel the pending action"
 

@@ -59,7 +59,7 @@ CARD EFFECTS:
   Toad Rider (Barricade, 4):
     Play on own Free Gub → Protected.
     Play on any Barricade on the field (any player, any type) → destroy it (Gub becomes Free).
-    If Rumor of Wasps: all Toad Riders return to owners' hands; Gubs become Free.
+    If Rumor of Wasps: Toad Rider, and the Gub it protects, are shuffled into the deck.
 
   Velvet Moth (Barricade, 2):
     Play on own Free Gub → Protected.
@@ -95,7 +95,7 @@ CARD EFFECTS:
     If cancelling a Letter, it is re-inserted into the deck.
 
   Age Old Cure (Interrupt, 2):
-    On own turn: retrieve one Gub from the discard pile into your colony.
+    On own turn: retrieve one Gub from the discard pile into your hand.
     During Gargok Plague: automatically consumed to save your hand.
 
   Blind Fold (Interrupt, 1):
@@ -106,7 +106,10 @@ CARD EFFECTS:
     Mode 2: Look at one opponent's hand.
 
   Retreat (Tool, 1):
-    Reclaim all your in-play barricades and traps back into your hand.
+    Reclaim everything from your colony back into your hand: all your in-play
+    Gubs (except the Esteemed Elder, which stays in play), plus all barricades
+    and traps attached to them. Any opponent Gubs you were holding in a Ring
+    trap are released back to their owners as Free Gubs.
 
   Traveling Merchant (Event, 1):
     Hands rotate right; each player keeps ONE card, rest shuffled into deck.
@@ -115,7 +118,9 @@ CARD EFFECTS:
     All hands shuffled into deck unless player discards an Age Old Cure.
 
   Rumor of Wasps (Event, 1):
-    All Toad Rider barricades return to owners' hands; Gubs become Free.
+    Every Toad Rider barricade in play, along with the Gub it was protecting,
+    is shuffled into the deck (the Esteemed Elder is never affected, since it
+    can never be Protected).
 
   Omen Beetle (Hazard, 1):
     Played from hand. Discards ALL Mushroom-protected Gubs and their Mushrooms.
@@ -644,6 +649,13 @@ class GubsGame:
                         actions.append({"type": "play_interrupt",
                                         "card_name": "Flop Boat", "card_idx": i,
                                         "is_cricket_song": True})
+                    if self._pending_is_gargok_plague():
+                        # Cricket Song can also mimic Age Old Cure here, to
+                        # protect this player's own hand from the plague.
+                        actions.append({"type": "play_interrupt",
+                                        "card_name": "Age Old Cure", "card_idx": i,
+                                        "is_cricket_song": True,
+                                        "is_gargok_save": True})
             return actions
 
         # ── DRAW PHASE ─────────────────────────
@@ -923,6 +935,11 @@ class GubsGame:
                                             "card_idx": i, "as_card": "Scout",
                                             "as_action": "play_scout_hand",
                                             "target_player": tp})
+                    if any(c.card_type == CardType.GUB and not c.is_elder
+                           for c in self.discard):
+                        actions.append({"type": "play_cricket_song",
+                                        "card_idx": i, "as_card": "Age Old Cure",
+                                        "as_action": "play_age_old_cure_retrieve"})
                     if self.colonies[cp]:
                         actions.append({"type": "play_cricket_song",
                                         "card_idx": i, "as_card": "Retreat"})
@@ -1154,7 +1171,8 @@ class GubsGame:
             card = self.hands[interruptor].pop(card_idx)
             self.discard.append(card)
             self._gargok_pre_saved.add(interruptor)
-            self._log(f"⚡ Player {interruptor} plays Age Old Cure — "
+            self._log(f"⚡ Player {interruptor} plays "
+                      f"{'Cricket Song as Age Old Cure' if is_cricket else 'Age Old Cure'} — "
                       f"hand protected from the pending Gargok Plague!")
             self._advance_interrupt_queue()
             return True
@@ -1270,12 +1288,19 @@ class GubsGame:
 
         elif n == "Rumor of Wasps":
             for p in range(self.num_players):
+                remaining = []
                 for g in self.colonies[p]:
-                    if g.barricade and g.barricade.barricade_kind == BarricadeKind.TOAD_RIDER:
-                        self.hands[p].append(g.barricade)
-                        g.barricade = None
-                        self._log(f"  Player {p}'s Toad Rider returned to hand; "
-                                  f"Gub is now Free.")
+                    if (not g.is_elder and g.barricade
+                            and g.barricade.barricade_kind == BarricadeKind.TOAD_RIDER):
+                        # The Toad Rider and the Gub it was protecting are both
+                        # shuffled into the deck.
+                        self.deck.insert(random.randint(0, len(self.deck)), g.barricade)
+                        self.deck.insert(random.randint(0, len(self.deck)), CARD_BY_NAME["Gub"])
+                        self._log(f"  Player {p}'s Toad Rider and the Gub behind it "
+                                  f"are shuffled into the deck!")
+                    else:
+                        remaining.append(g)
+                self.colonies[p] = remaining
 
         elif n == "Flash Flood":
             total = 0
@@ -1557,13 +1582,31 @@ class GubsGame:
     def _play_retreat(self, player: int, card_idx: int) -> bool:
         self._discard_from_hand(player, card_idx)
         reclaimed = []
+        remaining = []
         for gub in self.colonies[player]:
+            # Reclaim any barricade/trap attached to this gub.
             if gub.barricade:
                 reclaimed.append(gub.barricade)
                 gub.barricade = None
             if gub.trap:
                 reclaimed.append(gub.trap)
                 gub.trap = None
+                # If this gub was a Ring holding opponents' Gubs, release them
+                # back to their owners as Free Gubs.
+                for g in gub.trapped_gubs:
+                    g.trap  = None
+                    self.colonies[g.owner].append(g)
+                gub.trapped_gubs = []
+
+            if gub.is_elder:
+                # Esteemed Elder stays in play — only its barricade/trap (if any)
+                # is reclaimed above; restrictions on the Elder still apply.
+                remaining.append(gub)
+            else:
+                # The Gub itself returns to hand.
+                reclaimed.append(CARD_BY_NAME["Gub"])
+
+        self.colonies[player] = remaining
         self.hands[player].extend(reclaimed)
         while len(self.hands[player]) > self.MAX_HAND:
             self.discard.append(self.hands[player].pop())
@@ -1575,8 +1618,10 @@ class GubsGame:
         for i, c in enumerate(self.discard):
             if c.card_type == CardType.GUB and not c.is_elder:
                 self.discard.pop(i)
-                self.colonies[player].append(PlayedGub(owner=player))
-                self._log(f"Player {player} uses Age Old Cure to retrieve a Gub!")
+                self.hands[player].append(c)
+                self._log(f"Player {player} uses Age Old Cure to retrieve a Gub to hand!")
+                while len(self.hands[player]) > self.MAX_HAND:
+                    self.discard.append(self.hands[player].pop())
                 return True
         return False
 
@@ -1615,6 +1660,7 @@ class GubsGame:
             "Spear":        "play_spear_discard_gub",
             "Scout":        "play_scout_deck",
             "Retreat":      "play_retreat",
+            "Age Old Cure": "play_age_old_cure_retrieve",
         }.get(mimic)
 
         if mimic_action_type is None:
@@ -1700,6 +1746,7 @@ class GubsGame:
 
         if mimic_action_type == "play_retreat":
             reclaimed = []
+            remaining = []
             for gub in self.colonies[player]:
                 if gub.barricade:
                     reclaimed.append(gub.barricade)
@@ -1707,11 +1754,34 @@ class GubsGame:
                 if gub.trap:
                     reclaimed.append(gub.trap)
                     gub.trap = None
+                    for g in gub.trapped_gubs:
+                        g.trap  = None
+                        self.colonies[g.owner].append(g)
+                    gub.trapped_gubs = []
+
+                if gub.is_elder:
+                    remaining.append(gub)
+                else:
+                    reclaimed.append(CARD_BY_NAME["Gub"])
+
+            self.colonies[player] = remaining
             self.hands[player].extend(reclaimed)
             while len(self.hands[player]) > self.MAX_HAND:
                 self.discard.append(self.hands[player].pop())
             self._log(f"  Cricket Song → Retreat: Player {player} reclaims "
                       f"{len(reclaimed)} card(s).")
+            return True
+
+        if mimic_action_type == "play_age_old_cure_retrieve":
+            for i, c in enumerate(self.discard):
+                if c.card_type == CardType.GUB and not c.is_elder:
+                    self.discard.pop(i)
+                    self.hands[player].append(c)
+                    self._log(f"  Cricket Song → Age Old Cure: Player {player} "
+                              f"retrieves a Gub to hand!")
+                    while len(self.hands[player]) > self.MAX_HAND:
+                        self.discard.append(self.hands[player].pop())
+                    break
             return True
 
         self._log(f"  (Cricket Song: no handler for '{mimic}' — no effect)")
