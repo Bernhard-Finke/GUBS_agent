@@ -20,7 +20,7 @@ We also trained a reinforcement learning agent for 1,000,000 episodes. Best perf
  python gubs_play.py --opponent model --weights best.pt
 ```
 
-You can train your own model using the gubs_rl sript:
+You can train your own model using the gubs_rl script:
 
 ```
 python gubs_rl.py train \
