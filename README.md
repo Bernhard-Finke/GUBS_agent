@@ -8,7 +8,7 @@ gubs_engine contains the engine which sets out the rules for playing a game.
 
 gubs_play allows you to play a game on the command line. 
 
-To play against a simply baseline run the code using the following command.
+To play against a simple baseline run the code using the following command.
 
 ```
 python gubs_play.py --opponent greedy
