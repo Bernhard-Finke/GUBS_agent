@@ -1,0 +1,293 @@
+GUBS Strategy Analysis — Agent Simulation Report
+──────────────────────────────────────────────────────────────────────
+  Games vs Random : 10,000
+  Games vs Greedy : 10,000
+
+======================================================================
+  Overall Results — vs Random
+======================================================================
+  Win rate                                  80.1%
+  Avg agent score                           4.75
+  Avg opponent score                        1.69
+  Avg score difference                      3.06
+
+  ── Game Length
+  Mean turns per game                       36.98
+  Std dev turns                             3.73
+  Mean turns in wins                        37.04
+  Mean turns in losses                      36.75
+
+======================================================================
+  Card Strategy — vs Random
+======================================================================
+
+  Card                    Drawn  Play%  AvgHeld  WinAssoc
+  -------------------------------------------------------
+  Esteemed Elder           4658  99.5%     0.08     88.1%
+  Super Lure               9232  78.5%     4.28     84.7%
+  Cricket Song             4552  99.9%     0.13     82.4%
+  Haki Flute               9934  56.5%     5.86     81.0%
+  Blind Fold               5331  54.6%     5.41     80.9%
+  Smahl Thief              4572  94.1%     0.86     80.7%
+  Lightning                4848  30.4%     9.06     80.7%
+  Lure                    29348  88.7%     1.69     80.6%
+  Gub                     79947  99.7%     0.05     80.4%
+  Age Old Cure             9269  88.9%     2.89     80.4%
+  Triple Ring              5124  33.5%     8.29     80.1%
+  Cyclone                  5449  51.9%     6.47     80.1%
+  Feather                 10115  70.3%     4.07     79.9%
+  Spear                   16091  67.6%     4.66     79.6%
+  Single Ring              5080  38.0%     7.83     79.5%
+  Mushroom                22435  60.9%     7.29     79.5%
+  Retreat                  5052  18.5%     9.11     79.4%
+  Double Ring              5093  37.6%     7.48     79.4%
+  Omen Beetle              5294  35.3%     7.33     79.4%
+  Flop Boat                4775  74.8%     3.95     79.3%
+  Scout                    5102   2.0%    10.62     79.0%
+  Sud Spout               15346  42.3%     7.75     79.0%
+  Toad Rider              16838  63.5%     6.31     78.7%
+  Velvet Moth              9777  53.1%     7.66     78.5%
+
+  Win Association = fraction of games where this card
+  appeared in agent hand that the agent won.
+
+======================================================================
+  Interrupt Usage — vs Random
+======================================================================
+
+  Interrupt kind        Opportunities  Fire rate
+  ------------------------------------------------
+  spear                         2,213      93.0%
+  event                         2,565      90.5%
+  trap                          4,085      92.8%
+  hazard                        1,899      95.2%
+  lure                          2,342      99.3%
+  super_lure                      673      99.9%
+  letter                        1,575      91.1%
+
+  Fire rate = fraction of interrupt opportunities the agent
+  chose to use its interrupt card rather than pass.
+
+======================================================================
+  Aggression — vs Random
+======================================================================
+  Mean aggressive actions per game          6.74
+  Mean aggressive actions in wins           6.60
+  Mean aggressive actions in losses         7.30
+
+======================================================================
+  Colony Composition — vs Random
+======================================================================
+
+  ── How protected should your colony be?
+  Mean fraction of Gubs protected           10.2%
+
+  ── Peak colony score
+  Mean peak score reached                   6.09
+  Median peak score                         6.00
+  Mean peak score in wins                   6.33
+
+======================================================================
+  Endgame Buffer (score at 2nd letter) — vs Random
+======================================================================
+  Mean agent lead when 2nd letter drawn     1.80
+  Win rate when ahead at 2nd letter         81.7%
+  Win rate when behind at 2nd letter        74.5%
+
+======================================================================
+  Strategy Shift After 2nd Letter — vs Random
+======================================================================
+
+  Biggest changes in action frequency after the 2nd letter is drawn:
+  Action type                             Change
+  ------------------------------------------------
+  play_barricade                      ++3.8pp
+  end_discard                         -1.2pp
+  draw                                -1.0pp
+  end_play                            -1.0pp
+  skip_draw                           -0.7pp
+  play_lure                           -0.5pp
+  play_gub                            -0.5pp
+  discard_card                        ++0.2pp
+  play_sud_spout                      ++0.2pp
+  play_haki_flute                     ++0.2pp
+
+======================================================================
+  Event Card Impact — vs Random
+======================================================================
+
+  Event                       Count    AvgΔ  % Harmful
+  -----------------------------------------------------
+  Flash Flood                  7491   -2.92      86.1%
+  Dangerous Alchemy            7450   -1.77      48.2%
+  Rumor of Wasps               7505   -0.12       9.6%
+  Gargok Plague                7453    0.00       0.0%
+  Traveling Merchant           7484    0.00       0.0%
+
+  AvgΔ = mean change in agent score immediately after event resolves.
+  Negative = event hurts the agent on average.
+
+======================================================================
+  Cricket Song Mimicry — vs Random
+======================================================================
+
+  What the agent uses Cricket Song as most often:
+  Mimicked card              Fraction
+  ------------------------------------
+  Super Lure                    81.4%
+  Age Old Cure                  16.4%
+  Haki Flute                     2.2%
+  Smahl Thief                    0.0%
+
+======================================================================
+  Theft Dynamics — vs Random
+======================================================================
+  Mean times stolen from per game           3.35
+  Mean times agent stole per game           4.62
+
+======================================================================
+  Overall Results — vs Greedy
+======================================================================
+  Win rate                                  58.5%
+  Avg agent score                           3.64
+  Avg opponent score                        2.64
+  Avg score difference                      0.99
+
+  ── Game Length
+  Mean turns per game                       29.59
+  Std dev turns                             2.60
+  Mean turns in wins                        29.50
+  Mean turns in losses                      29.70
+
+======================================================================
+  Card Strategy — vs Greedy
+======================================================================
+
+  Card                    Drawn  Play%  AvgHeld  WinAssoc
+  -------------------------------------------------------
+  Esteemed Elder           3942  99.0%     0.07     68.4%
+  Super Lure               7831  86.1%     2.27     68.3%
+  Cricket Song             4012 100.0%     0.05     63.9%
+  Double Ring              4363  55.6%     4.75     60.2%
+  Blind Fold               4429  60.8%     3.65     60.0%
+  Lure                    25766  91.1%     1.10     59.9%
+  Haki Flute               8664  62.1%     4.31     59.8%
+  Smahl Thief              4086  95.8%     0.48     59.3%
+  Gub                     67563  99.4%     0.04     58.6%
+  Lightning                4158  37.4%     7.04     58.6%
+  Age Old Cure             7850  88.4%     2.31     58.3%
+  Triple Ring              4410  48.3%     5.41     57.7%
+  Omen Beetle              4382  53.9%     4.63     57.4%
+  Mushroom                20181  56.6%     5.91     57.4%
+  Spear                   14479  76.6%     2.91     57.3%
+  Single Ring              4217  54.6%     4.71     57.3%
+  Feather                  8488  70.7%     3.18     57.2%
+  Retreat                  4061  26.9%     7.03     57.0%
+  Velvet Moth              8362  46.9%     6.63     56.9%
+  Toad Rider              14784  63.2%     4.93     56.8%
+  Cyclone                  4804  63.4%     4.68     56.7%
+  Sud Spout               14397  60.4%     4.54     56.6%
+  Flop Boat                3934  71.5%     3.31     55.5%
+  Scout                    4318   1.7%     8.74     55.5%
+
+  Win Association = fraction of games where this card
+  appeared in agent hand that the agent won.
+
+======================================================================
+  Interrupt Usage — vs Greedy
+======================================================================
+
+  Interrupt kind        Opportunities  Fire rate
+  ------------------------------------------------
+  super_lure                      616      98.5%
+  trap                          3,943      76.8%
+  letter                        1,432      81.4%
+  lure                          2,258      98.2%
+  spear                         2,001      77.7%
+  event                         2,284      77.4%
+  hazard                        2,060      86.5%
+
+  Fire rate = fraction of interrupt opportunities the agent
+  chose to use its interrupt card rather than pass.
+
+======================================================================
+  Aggression — vs Greedy
+======================================================================
+  Mean aggressive actions per game          6.90
+  Mean aggressive actions in wins           6.71
+  Mean aggressive actions in losses         7.16
+
+======================================================================
+  Colony Composition — vs Greedy
+======================================================================
+
+  ── How protected should your colony be?
+  Mean fraction of Gubs protected           9.3%
+
+  ── Peak colony score
+  Mean peak score reached                   4.97
+  Median peak score                         5.00
+  Mean peak score in wins                   5.65
+
+======================================================================
+  Endgame Buffer (score at 2nd letter) — vs Greedy
+======================================================================
+  Mean agent lead when 2nd letter drawn     0.49
+  Win rate when ahead at 2nd letter         63.4%
+  Win rate when behind at 2nd letter        51.2%
+
+======================================================================
+  Strategy Shift After 2nd Letter — vs Greedy
+======================================================================
+
+  Biggest changes in action frequency after the 2nd letter is drawn:
+  Action type                             Change
+  ------------------------------------------------
+  play_barricade                      ++3.5pp
+  draw                                -1.1pp
+  end_discard                         -0.9pp
+  end_play                            -0.8pp
+  play_gub                            -0.6pp
+  play_lure                           -0.5pp
+  skip_draw                           -0.4pp
+  play_sud_spout                      ++0.3pp
+  play_cyclone                        ++0.2pp
+  play_haki_flute                     ++0.2pp
+
+======================================================================
+  Event Card Impact — vs Greedy
+======================================================================
+
+  Event                       Count    AvgΔ  % Harmful
+  -----------------------------------------------------
+  Flash Flood                  7420   -2.40      77.9%
+  Dangerous Alchemy            7441   -1.16      37.0%
+  Rumor of Wasps               7463   -0.08       6.3%
+  Gargok Plague                7481    0.00       0.0%
+  Traveling Merchant           7467    0.00       0.0%
+
+  AvgΔ = mean change in agent score immediately after event resolves.
+  Negative = event hurts the agent on average.
+
+======================================================================
+  Cricket Song Mimicry — vs Greedy
+======================================================================
+
+  What the agent uses Cricket Song as most often:
+  Mimicked card              Fraction
+  ------------------------------------
+  Super Lure                    87.7%
+  Age Old Cure                  10.1%
+  Haki Flute                     2.0%
+  Smahl Thief                    0.1%
+  Retreat                        0.0%
+
+======================================================================
+  Theft Dynamics — vs Greedy
+======================================================================
+  Mean times stolen from per game           4.04
+  Mean times agent stole per game           4.31
+
+======================================================================
+  End of report
+======================================================================
